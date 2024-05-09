@@ -32,7 +32,7 @@
 			 "name": "mnt_fss_1",
 			 "manufacturer": "Schletter",
 			 "model": "",
-			 "tracking": "f",
+			 "tracking": false,
 			 "type": "ground",
 			 "azimuth": 180.0,
 			 "tilt": 25.0
