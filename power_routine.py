@@ -16,9 +16,6 @@ import ruptures as rpt
 import pvlib
 import time
 
-nsrdb_api_key = '4z5fRAXbGB3qldVVd3c6WH5CuhtY5mhgC2DyD952'
-nsrdb_user_email = "kirsten.perry@nrel.gov"
-
 def pull_power_data(system_id, grouping, timezone):
     """
     Pull the AC power data associated with the site.
@@ -53,34 +50,6 @@ def pull_power_data(system_id, grouping, timezone):
         print("System failure: " + str(system_id))
         pv_dataframe = pd.DataFrame()
     return pv_dataframe
-
-def pull_nsrdb_data(time_series, system_id, grouping):
-    """
-    Pull the NSRDB data for a particular system.
-    """
-    # Get the time frequency of the time series
-    time_series.index = pd.to_datetime(time_series.index)
-    freq_minutes = mode(
-        time_series.index.to_series().diff(
-        ).dt.seconds / 60)
-    data_freq = str(freq_minutes) + "min"
-    psm3s = []
-    years = list(time_series.index.year.drop_duplicates())
-    years = [int(x) for x in years if x <= 2020]
-    for year in years:
-        psm3 = pd.read_csv("C:/tmp/PVFleetDataInitiative/Results/" + grouping
-                           + "/nsrdb/" + str(system_id) + "_"+ str(year) + ".csv",
-                           index_col=0, parse_dates=True)
-        psm3s.append(psm3)
-    if len(psm3s) > 0:
-        psm3 = pd.concat(psm3s)
-        psm3 = psm3.groupby(psm3.index).first()
-        psm3 = psm3.reindex(pd.date_range(psm3.index[0],
-                                  psm3.index[-1],
-                                  freq=data_freq)).interpolate()
-        psm3.index = psm3.index.tz_convert(time_series.index.tz)
-        psm3 = psm3.reindex(time_series.index).interpolate()
-    return psm3
 
 def pvanalytics_mount_check(estimated_az, estimated_tilt, estimated_mount,
                             gt_az, gt_tilt, gt_mount, system_id,
